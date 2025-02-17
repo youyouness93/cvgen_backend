@@ -1,0 +1,15 @@
+[phases.setup]
+nixPkgs = ["nodejs", "npm"]
+
+[phases.install]
+cmds = ["npm install --production=false"]
+
+[phases.build]
+cmds = [
+    "npm run clean",
+    "npx prisma generate",
+    "npx tsc"
+]
+
+[start]
+cmd = "npm start"
