@@ -9,7 +9,7 @@ interface GenerateRequestBody {
 
 const router = Router();
 
-const generateCV: RequestHandler<{}, any, GenerateRequestBody> = async (req, res) => {
+const generateCV: RequestHandler<{}, any, GenerateRequestBody> = async (req, res, next) => {
   try {
     const { jobDescription, cvData } = req.body;
     

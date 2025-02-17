@@ -8,12 +8,13 @@ interface CVRequestBody {
 
 const router = Router();
 
-const createCV: RequestHandler<{}, any, CVRequestBody> = async (req, res) => {
+const createCV: RequestHandler<{}, any, CVRequestBody> = async (req, res, next) => {
   try {
     const { cvData, jobData } = req.body;
 
     if (!cvData || !jobData) {
-      return res.status(400).json({ error: 'CV et description du poste requis' });
+      res.status(400).json({ error: 'CV et description du poste requis' });
+      return;
     }
 
     const cvId = await CVService.createCV(cvData, jobData);
@@ -24,7 +25,7 @@ const createCV: RequestHandler<{}, any, CVRequestBody> = async (req, res) => {
   }
 };
 
-const getCV: RequestHandler<{ id: string }> = async (req, res) => {
+const getCV: RequestHandler<{ id: string }> = async (req, res, next) => {
   try {
     const { id } = req.params;
     const cv = await CVService.getCV(id);
