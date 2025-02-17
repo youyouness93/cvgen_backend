@@ -35,7 +35,9 @@ export class CVService {
       id: cv.id,
       status: cv.status,
       error: cv.error,
-      data: cv.optimizedCV ? JSON.parse(cv.optimizedCV) : null
+      data: cv.optimizedCV ? JSON.parse(cv.optimizedCV) : null,
+      originalCV: cv.originalCV ? JSON.parse(cv.originalCV) : null,
+      jobData: cv.jobData ? JSON.parse(cv.jobData) : null
     };
   }
 
@@ -97,10 +99,17 @@ Renvoie uniquement le JSON du CV optimisé, sans texte supplémentaire.`;
         response_format: { type: "json_object" }
       });
 
-      const optimizedCV = completion.choices[0].message.content;
+      const optimizedCV = completion.choices[0]?.message?.content;
 
       if (!optimizedCV) {
         throw new Error('Pas de réponse de l\'IA');
+      }
+
+      // Vérifier que la réponse est bien un JSON valide
+      try {
+        JSON.parse(optimizedCV);
+      } catch (e) {
+        throw new Error('La réponse de l\'IA n\'est pas un JSON valide');
       }
 
       // Mettre à jour le CV dans la base de données
@@ -124,6 +133,8 @@ Renvoie uniquement le JSON du CV optimisé, sans texte supplémentaire.`;
           error: error?.message || 'Erreur inconnue lors de la génération'
         }
       });
+
+      throw error; // Propager l'erreur pour le logging
     }
   }
 }
