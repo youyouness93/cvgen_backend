@@ -4,8 +4,9 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "prebuild": "npx prisma generate",
-    "build": "tsc",
+    "clean": "rimraf dist",
+    "prebuild": "npm run clean && npx prisma generate",
+    "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js"
   },
   "keywords": [],
@@ -20,7 +21,8 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.18.2",
-    "openai": "^4.28.0"
+    "openai": "^4.28.0",
+    "rimraf": "^5.0.5"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
