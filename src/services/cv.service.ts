@@ -3,9 +3,15 @@ import openai from '../lib/openai';
 
 export class CVService {
   static async createCV(cvData: any, jobData: any) {
+    console.log('🚀 Début de createCV avec:', { 
+      cvDataLength: JSON.stringify(cvData).length,
+      jobDataLength: JSON.stringify(jobData).length 
+    });
+
     const cvJson = JSON.stringify(cvData);
     const jobJson = JSON.stringify(jobData);
 
+    console.log('💾 Création du CV dans la base de données...');
     const cv = await prisma.cV.create({
       data: {
         originalCV: cvJson,
@@ -13,23 +19,34 @@ export class CVService {
         status: 'processing'
       }
     });
+    console.log('✅ CV créé avec ID:', cv.id);
 
     // Lancer la génération en arrière-plan
+    console.log('🔄 Lancement de la génération en arrière-plan...');
     this.generateCV(cv.id, cvData, jobData).catch(error => {
-      console.error('Erreur de génération en arrière-plan:', error);
+      console.error('❌ Erreur de génération en arrière-plan:', error);
     });
 
     return cv.id;
   }
 
   static async getCV(id: string) {
+    console.log('🔍 Recherche du CV avec ID:', id);
     const cv = await prisma.cV.findUnique({
       where: { id }
     });
 
     if (!cv) {
+      console.log('❌ CV non trouvé pour ID:', id);
       throw new Error('CV non trouvé');
     }
+
+    console.log('📊 État du CV:', {
+      id: cv.id,
+      status: cv.status,
+      hasError: !!cv.error,
+      hasOptimizedCV: !!cv.optimizedCV
+    });
 
     return {
       id: cv.id,
@@ -39,10 +56,14 @@ export class CVService {
     };
   }
 
-  private static async generateCV(id: string, cvData: any, jobData: any) {
+  static async generateCV(id: string, cvData: any, jobData: any) {
+    console.log('\n🎯 Début de generateCV pour ID:', id);
+    console.log('📝 Données reçues:', {
+      cvDataKeys: Object.keys(cvData),
+      jobDataKeys: Object.keys(jobData)
+    });
+
     try {
-      console.log('Début de la génération pour:', id);
-      
       const prompt = `Tu es un expert en ressources humaines spécialisé dans la création de CV selon les normes canadiennes.
 Tu as une excellente capacité à identifier les liens entre les activités personnelles et les compétences professionnelles.
 
@@ -81,6 +102,7 @@ Instructions spécifiques :
 
 Renvoie uniquement le JSON du CV optimisé, sans texte supplémentaire.`;
 
+      console.log('🤖 Appel de l\'API OpenAI...');
       const completion = await openai.chat.completions.create({
         messages: [
           {
@@ -92,17 +114,19 @@ Renvoie uniquement le JSON du CV optimisé, sans texte supplémentaire.`;
             content: prompt
           }
         ],
-        model: "gpt-4-turbo-preview",
+        model: "gpt-4",
         temperature: 0.7,
         response_format: { type: "json_object" }
       });
 
+      console.log('✅ Réponse reçue de l\'API OpenAI');
       const optimizedCV = completion.choices[0].message.content;
-
+      
       if (!optimizedCV) {
         throw new Error('Pas de réponse de l\'IA');
       }
 
+      console.log('💾 Mise à jour du CV dans la base de données...');
       // Mettre à jour le CV dans la base de données
       await prisma.cV.update({
         where: { id },
@@ -111,12 +135,16 @@ Renvoie uniquement le JSON du CV optimisé, sans texte supplémentaire.`;
           status: 'completed'
         }
       });
-
-      console.log('Génération terminée pour:', id);
+      console.log('✅ CV mis à jour avec succès. Status: completed');
     } catch (error: any) {
-      console.error('Erreur lors de la génération:', error);
-      
+      console.error('❌ Erreur détaillée:', {
+        message: error.message,
+        stack: error.stack,
+        type: error.constructor.name
+      });
+
       // Mettre à jour le statut d'erreur
+      console.log('🔄 Mise à jour du statut d\'erreur dans la base de données...');
       await prisma.cV.update({
         where: { id },
         data: {
@@ -124,6 +152,7 @@ Renvoie uniquement le JSON du CV optimisé, sans texte supplémentaire.`;
           error: error?.message || 'Erreur inconnue lors de la génération'
         }
       });
+      console.log('✅ Statut d\'erreur mis à jour');
     }
   }
 }
