@@ -11,20 +11,48 @@ const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors({
-  origin: process.env.CORS_ORIGIN,
+  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  methods: ['GET', 'POST'],
   credentials: true,
 }));
+
 app.use(express.json());
+
+// Healthcheck route
+app.get('/', (req, res) => {
+  res.json({ status: 'ok' });
+});
 
 // Routes
 app.use('/api/analyze', analyzeRouter);
 app.use('/api/generate', generateRouter);
 
-// Health check
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
+// Error handling middleware
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({ error: 'Internal server error' });
 });
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+// Start server
+const server = app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+}).on('error', (err) => {
+  console.error('Failed to start server:', err);
+  process.exit(1);
+});
+
+// Handle process termination
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received. Shutting down gracefully...');
+  server.close(() => {
+    console.log('Server closed');
+    process.exit(0);
+  });
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught exception:', err);
+  server.close(() => {
+    process.exit(1);
+  });
 });

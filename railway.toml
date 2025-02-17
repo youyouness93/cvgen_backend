@@ -4,4 +4,4 @@ buildCommand = "npm install --production=false && npm run build"
 
 [deploy]
 startCommand = "npm start"
-healthcheckPath = "/"
+restartPolicyType = "never"
