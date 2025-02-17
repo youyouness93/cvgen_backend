@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, RequestHandler } from 'express';
 import { CVService } from '../services/cv.service';
 
 interface CVRequestBody {
@@ -8,7 +8,7 @@ interface CVRequestBody {
 
 const router = Router();
 
-router.post('/', async (req: Request<{}, any, CVRequestBody>, res: Response) => {
+const createCV: RequestHandler<{}, any, CVRequestBody> = async (req, res) => {
   try {
     const { cvData, jobData } = req.body;
 
@@ -22,9 +22,9 @@ router.post('/', async (req: Request<{}, any, CVRequestBody>, res: Response) => 
     console.error('Error in analyze route:', error);
     res.status(500).json({ error: error?.message || 'Internal server error' });
   }
-});
+};
 
-router.get('/:id', async (req: Request<{ id: string }>, res: Response) => {
+const getCV: RequestHandler<{ id: string }> = async (req, res) => {
   try {
     const { id } = req.params;
     const cv = await CVService.getCV(id);
@@ -37,6 +37,9 @@ router.get('/:id', async (req: Request<{ id: string }>, res: Response) => {
       res.status(500).json({ error: 'Internal server error' });
     }
   }
-});
+};
+
+router.post('/', createCV);
+router.get('/:id', getCV);
 
 export const analyzeRouter = router;

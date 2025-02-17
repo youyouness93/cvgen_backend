@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, RequestHandler } from 'express';
 import prisma from '../lib/prisma';
 import openai from '../lib/openai';
 
@@ -9,7 +9,7 @@ interface GenerateRequestBody {
 
 const router = Router();
 
-router.post('/', async (req: Request<{}, any, GenerateRequestBody>, res: Response) => {
+const generateCV: RequestHandler<{}, any, GenerateRequestBody> = async (req, res) => {
   try {
     const { jobDescription, cvData } = req.body;
     
@@ -21,6 +21,8 @@ router.post('/', async (req: Request<{}, any, GenerateRequestBody>, res: Respons
     console.error('Error in generate route:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
-});
+};
+
+router.post('/', generateCV);
 
 export const generateRouter = router;
