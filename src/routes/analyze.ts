@@ -1,9 +1,14 @@
 import { Router, Request, Response } from 'express';
 import { CVService } from '../services/cv.service';
 
+interface CVRequestBody {
+  cvData: any;
+  jobData: any;
+}
+
 const router = Router();
 
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', async (req: Request<{}, any, CVRequestBody>, res: Response) => {
   try {
     const { cvData, jobData } = req.body;
 
@@ -19,7 +24,7 @@ router.post('/', async (req: Request, res: Response) => {
   }
 });
 
-router.get('/:id', async (req: Request, res: Response) => {
+router.get('/:id', async (req: Request<{ id: string }>, res: Response) => {
   try {
     const { id } = req.params;
     const cv = await CVService.getCV(id);
