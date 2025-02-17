@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { analyzeRouter } from './routes/analyze';
 import { generateRouter } from './routes/generate';
+import { Server } from 'http';
 
 dotenv.config();
 
@@ -20,17 +21,24 @@ console.log('🔧 Configuration de l\'environnement:', {
 
 // Middleware CORS avec configuration détaillée
 app.use(cors({
-  origin: (origin, callback) => {
+  origin: (origin: string | undefined, callback: (error: Error | null, allow?: boolean) => void) => {
     const allowedOrigins = [
       process.env.FRONTEND_URL,
       'https://cvgen-nadi.vercel.app',
       'http://localhost:3000'
-    ].filter(Boolean);
+    ].filter((url): url is string => typeof url === 'string');
 
     console.log('🔒 CORS - Origine de la requête:', origin);
     console.log('🔒 CORS - Origines autorisées:', allowedOrigins);
 
-    if (!origin || allowedOrigins.some(allowed => origin.startsWith(allowed))) {
+    // Autoriser les requêtes sans origine (comme Postman)
+    if (!origin) {
+      callback(null, true);
+      return;
+    }
+
+    // Vérifier si l'origine est autorisée
+    if (allowedOrigins.some(allowed => origin.startsWith(allowed))) {
       callback(null, true);
     } else {
       callback(new Error('Non autorisé par CORS'));
@@ -110,9 +118,6 @@ const server = app.listen(port, () => {
   * POST /generate
   * GET  /generate/:id
 `);
-}).on('error', (err) => {
-  console.error('Failed to start server:', err);
-  process.exit(1);
 });
 
 // Handle process termination
