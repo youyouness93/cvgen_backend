@@ -28,30 +28,53 @@ app.use(express.json());
 
 // Middleware de logging
 app.use((req, res, next) => {
-  console.log(`📝 ${req.method} ${req.path} - Body:`, req.body);
+  console.log(`📝 ${new Date().toISOString()} - ${req.method} ${req.path}`, {
+    query: req.query,
+    body: req.body,
+    headers: {
+      'content-type': req.headers['content-type'],
+      origin: req.headers.origin
+    }
+  });
   next();
 });
 
+// Routes API
+console.log('🛣️ Montage des routes API...');
+app.use('/analyze', analyzeRouter);
+app.use('/generate', generateRouter);
+console.log('✅ Routes montées:', ['/analyze', '/generate']);
+
 // Healthcheck route
 app.get('/', (req, res) => {
+  const envStatus = {
+    hasDatabase: !!process.env.DATABASE_URL,
+    hasOpenAI: !!process.env.OPENAI_API_KEY,
+    hasFrontendUrl: !!process.env.FRONTEND_URL
+  };
+  
+  console.log('🏥 Healthcheck appelé, status:', envStatus);
+  
   res.json({ 
     status: 'ok', 
     message: 'CV Generator API is running',
-    env: {
-      hasDatabase: !!process.env.DATABASE_URL,
-      hasOpenAI: !!process.env.OPENAI_API_KEY,
-      hasFrontendUrl: !!process.env.FRONTEND_URL
+    env: envStatus,
+    routes: {
+      analyze: '/analyze',
+      generate: '/generate'
     }
   });
 });
 
-// Routes
-app.use('/api/analyze', analyzeRouter);
-app.use('/api/generate', generateRouter);
-
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error('❌ Erreur serveur:', err);
+  console.error('❌ Erreur serveur:', {
+    error: err.message,
+    stack: err.stack,
+    path: req.path,
+    method: req.method
+  });
+  
   res.status(500).json({
     error: err.message || 'Erreur interne du serveur'
   });
@@ -59,7 +82,17 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 
 // Start server
 const server = app.listen(port, () => {
-  console.log(`🚀 Serveur démarré sur le port ${port}`);
+  console.log(`
+🚀 Serveur démarré avec succès :
+- Port: ${port}
+- Environment: ${process.env.NODE_ENV || 'development'}
+- Routes: 
+  * GET  /
+  * POST /analyze
+  * GET  /analyze/:id
+  * POST /generate
+  * GET  /generate/:id
+`);
 }).on('error', (err) => {
   console.error('Failed to start server:', err);
   process.exit(1);
