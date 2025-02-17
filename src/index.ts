@@ -14,12 +14,28 @@ console.log('🔧 Configuration de l\'environnement:', {
   hasDatabase: !!process.env.DATABASE_URL,
   hasOpenAI: !!process.env.OPENAI_API_KEY,
   hasFrontendUrl: !!process.env.FRONTEND_URL,
+  frontendUrl: process.env.FRONTEND_URL,
   port: port
 });
 
-// Middleware
+// Middleware CORS avec configuration détaillée
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: (origin, callback) => {
+    const allowedOrigins = [
+      process.env.FRONTEND_URL,
+      'https://cvgen-nadi.vercel.app',
+      'http://localhost:3000'
+    ].filter(Boolean);
+
+    console.log('🔒 CORS - Origine de la requête:', origin);
+    console.log('🔒 CORS - Origines autorisées:', allowedOrigins);
+
+    if (!origin || allowedOrigins.some(allowed => origin.startsWith(allowed))) {
+      callback(null, true);
+    } else {
+      callback(new Error('Non autorisé par CORS'));
+    }
+  },
   methods: ['GET', 'POST'],
   credentials: true,
 }));
@@ -86,6 +102,7 @@ const server = app.listen(port, () => {
 🚀 Serveur démarré avec succès :
 - Port: ${port}
 - Environment: ${process.env.NODE_ENV || 'development'}
+- Frontend URL: ${process.env.FRONTEND_URL}
 - Routes: 
   * GET  /
   * POST /analyze
