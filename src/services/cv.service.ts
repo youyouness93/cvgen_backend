@@ -209,7 +209,7 @@ Retourne UNIQUEMENT un objet JSON valide avec la structure suivante, sans aucun 
         messages: [
           {
             role: "system",
-            content: "Tu es un expert en ressources humaines spécialisé dans l'optimisation de CV. Tu dois ABSOLUMENT conserver TOUTES les expériences professionnelles du CV original, sans exception. Tu peux reformuler leur contenu mais tu ne dois ni en ajouter ni en supprimer. tu dois identitifier la langue de la description du poste a pourvoir c'est la langue avec laquelle tu vas generer le nouveau cv. Le contenu du nouveau CV doit etre adequat au poste a pourvoir."
+            content: "Tu es un expert en ressources humaines spécialisé dans l'optimisation de CV. Tu dois ABSOLUMENT conserver TOUTES les expériences professionnelles du CV original, sans exception. Tu peux reformuler leur contenu mais tu ne dois ni en ajouter ni en supprimer. tu dois ABSOLUMENT identifier la langue de ${jobData.jobDescription} c'est la langue avec laquelle tu vas generer le nouveau cv. Le contenu du nouveau CV doit etre adequat au poste a pourvoir."
           },
           {
             role: "user",
