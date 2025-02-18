@@ -58,6 +58,13 @@ export class CVService {
 
   static async generateCV(id: string, cvData: any, jobData: any) {
     console.log('\n🎯 Début de generateCV pour ID:', id);
+    
+    // Vérifier la configuration OpenAI
+    console.log('🔑 Vérification de la configuration OpenAI:', {
+      hasApiKey: !!process.env.OPENAI_API_KEY,
+      apiKeyLength: process.env.OPENAI_API_KEY?.length || 0
+    });
+
     console.log('📝 Données reçues:', {
       cvDataKeys: Object.keys(cvData),
       jobDataKeys: Object.keys(jobData)
@@ -103,6 +110,8 @@ Instructions spécifiques :
 Renvoie uniquement le JSON du CV optimisé, sans texte supplémentaire.`;
 
       console.log('🤖 Appel de l\'API OpenAI...');
+      console.log('📤 Envoi du prompt de longueur:', prompt.length);
+
       const completion = await openai.chat.completions.create({
         messages: [
           {
@@ -119,11 +128,24 @@ Renvoie uniquement le JSON du CV optimisé, sans texte supplémentaire.`;
         response_format: { type: "json_object" }
       });
 
-      console.log('✅ Réponse reçue de l\'API OpenAI');
+      console.log('✅ Réponse reçue de l\'API OpenAI:', {
+        hasContent: !!completion.choices[0].message.content,
+        contentLength: completion.choices[0].message.content?.length || 0
+      });
+
       const optimizedCV = completion.choices[0].message.content;
       
       if (!optimizedCV) {
         throw new Error('Pas de réponse de l\'IA');
+      }
+
+      // Vérifier que la réponse est un JSON valide
+      try {
+        JSON.parse(optimizedCV);
+        console.log('✅ La réponse est un JSON valide');
+      } catch (e) {
+        console.error('❌ La réponse n\'est pas un JSON valide:', e);
+        throw new Error('La réponse de l\'IA n\'est pas un JSON valide');
       }
 
       console.log('💾 Mise à jour du CV dans la base de données...');
@@ -140,7 +162,8 @@ Renvoie uniquement le JSON du CV optimisé, sans texte supplémentaire.`;
       console.error('❌ Erreur détaillée:', {
         message: error.message,
         stack: error.stack,
-        type: error.constructor.name
+        type: error.constructor.name,
+        openaiError: error.response?.data || error.response || null
       });
 
       // Mettre à jour le statut d'erreur
