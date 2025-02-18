@@ -123,7 +123,7 @@ Renvoie uniquement le JSON du CV optimisé, sans texte supplémentaire.`;
             content: prompt
           }
         ],
-        model: "gpt-4",
+        model: "gpt-4o-mini-2024-07-18",
         temperature: 0.7,
         response_format: { type: "json_object" }
       });
