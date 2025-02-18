@@ -209,7 +209,7 @@ Retourne UNIQUEMENT un objet JSON valide avec la structure suivante, sans aucun 
         messages: [
           {
             role: "system",
-            content: "Tu es un expert en ressources humaines spécialisé dans l'optimisation de CV."
+            content: "Tu es un expert en ressources humaines spécialisé dans l'optimisation de CV. Tu dois ABSOLUMENT conserver TOUTES les expériences professionnelles du CV original, sans exception. Tu peux reformuler leur contenu mais tu ne dois ni en ajouter ni en supprimer."
           },
           {
             role: "user",
@@ -217,7 +217,7 @@ Retourne UNIQUEMENT un objet JSON valide avec la structure suivante, sans aucun 
           }
         ],
         model: "gpt-4-turbo-preview",
-        temperature: 0.7,
+        temperature: 0.3,
         response_format: { type: "json_object" }
       });
 
