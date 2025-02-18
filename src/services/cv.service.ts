@@ -215,7 +215,7 @@ Retourne UNIQUEMENT un objet JSON valide avec la structure suivante, sans aucun 
             content: prompt
           }
         ],
-        model: "gpt-4o-mini",
+        model: "gpt-4-turbo-preview",
         temperature: 0.7,
         response_format: { type: "json_object" }
       });
