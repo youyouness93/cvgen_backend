@@ -89,7 +89,7 @@ Instructions spécifiques :
 2. . Adaptation au poste  
    - Reformule et ajuste chaque section pour mettre l’accent sur les compétences, mots-clés et exigences directement liés au poste.  
    - Ton de rédaction professionnel et clair.  
-   - Mets en avant les réalisations pertinentes.  
+   - Mets en avant 3 réalisations pertinentes pour chaque experience professionnlle.  
    - Utilise un **format chronologique inverse** (expériences les plus récentes en premier).
 
 3. estimela longueur du contenu et optimise la mise en page :
@@ -106,10 +106,11 @@ Instructions spécifiques :
    - **Crée** 1 à 2 centres d’intérêts ou loisirs qui montrent des qualités ou compétences indirectement utiles pour le poste (leadership, créativité, esprit d’équipe, etc.).  
    - Donne des descriptions **spécifiques** et **détaillées** (1-2 phrases) expliquant pourquoi ces hobbies sont utiles ou valorisants dans le contexte professionnel.
 
-6. - **Ne pas changer le domaine d’activité** : Conserve les mêmes titres de postes, périodes, entreprises, et contexte général (même secteur si mentionné) figurant dans le CV initial.  
+6. - liste toutes les experiences professionnlles du cv initial
+   -**Ne pas changer le domaine d’activité** : Conserve les mêmes titres de postes, périodes, entreprises, et contexte général (même secteur si mentionné) figurant dans le CV initial.  
    - **Adapter les tâches et réalisations** : Reformule les responsabilités, missions et réalisations pour mieux correspondre aux exigences du poste à pourvoir, **mais sans créer de nouvelles expériences** qui n’existent pas.  
    - **Pas de fictions dans l’expérience** : Ne crée pas de nouveaux postes, entreprises ou durées d’emploi qui ne figurent pas dans le CV d’origine.  
-   - **Possibilité d’ajouter/modifier les descriptions de tâches** : Si nécessaire, tu peux reformuler ou détailler les tâches pour les aligner avec l’offre d’emploi. 
+   - Si nécessaire, tu peux reformuler ou détailler les tâches pour les aligner avec l’offre d’emploi. 
 
 Points importants pour un CV canadien :
 1. Pas de photo
