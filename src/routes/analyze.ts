@@ -34,12 +34,12 @@ const createCV: RequestHandler<{}, any, CVRequestBody> = async (req, res, next) 
   }
 };
 
-const getCV: RequestHandler<{ id: string }> = async (req, res, next) => {
-  console.log('📥 GET /analyze - Params:', req.params);
+const getCV: RequestHandler = async (req, res, next) => {
+  // Récupérer l'ID soit des params soit du query
+  const id = req.params.id || req.query.id;
+  console.log('📥 GET /analyze - ID:', id);
 
   try {
-    const { id } = req.params;
-
     if (!id || typeof id !== 'string') {
       console.log('❌ ID manquant ou invalide');
       res.status(400).json({ error: 'ID du CV requis' });
@@ -50,18 +50,20 @@ const getCV: RequestHandler<{ id: string }> = async (req, res, next) => {
     const cv = await CVService.getCV(id);
     console.log('✅ CV trouvé, status:', cv.status);
 
+    if (!cv) {
+      res.status(404).json({ error: 'CV non trouvé' });
+      return;
+    }
+
     res.json(cv);
   } catch (error: any) {
     console.error('❌ Erreur dans GET /analyze:', error);
-    if (error.message === 'CV non trouvé') {
-      res.status(404).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'Internal server error' });
-    }
+    res.status(500).json({ error: error?.message || 'Internal server error' });
   }
 };
 
 router.post('/', createCV);
-router.get('/:id', getCV);
+router.get('/:id', getCV); // Support pour /analyze/:id
+router.get('/', getCV);    // Support pour /analyze?id=
 
 export const analyzeRouter = router;
